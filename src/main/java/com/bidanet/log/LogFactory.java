@@ -45,11 +45,11 @@ public class LogFactory  {
      * @throws Throwable
      */
 
-    public Object execPoint(ProceedingJoinPoint pjp, Class<LogHandler>... handlers) throws Throwable {
+    public Object execPoint(ProceedingJoinPoint pjp, Class<? extends LogHandler>... handlers) throws Throwable {
         Object[] args = pjp.getArgs();//参数
         List<LogHandler> logHandlers=new ArrayList<>(handlers.length);
         //1.创建处理类
-        for (Class<LogHandler> aClass : handlers) {
+        for (Class<? extends LogHandler> aClass : handlers) {
             LogHandler logHandler = BeanUtils.instantiate(aClass);
             logHandler.beforeSync(pjp);
             logHandlers.add(logHandler);
