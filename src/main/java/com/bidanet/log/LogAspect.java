@@ -21,7 +21,7 @@ public class LogAspect {
     public Object Interceptor(ProceedingJoinPoint pjp,BdLog bdLog) throws Throwable {
         Class<LogHandler>[] value = bdLog.value();
 
-        return logFactory.execPoint(pjp);
+        return logFactory.execPoint(pjp,value);
 
 
     }
