@@ -11,6 +11,7 @@ public interface LogHandler<T> {
      *
      */
     default void beforeSync(ProceedingJoinPoint point){}
+    default void endSync(ProceedingJoinPoint point,Object result){}
 
     /**
      * 方法调用结束后 在其他线程异步执行

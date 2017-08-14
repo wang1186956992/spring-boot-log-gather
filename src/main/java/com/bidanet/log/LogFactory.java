@@ -75,9 +75,11 @@ public class LogFactory  {
         });
 
         //3.执行内容
-
+        Object proceed=null;
         try {
-            Object proceed = pjp.proceed(args);
+            proceed = pjp.proceed(args);
+
+
             cachedThreadPool.submit(()-> logHandlers.forEach(h->{
                 h.endAsync(true,null);
             }));
@@ -88,6 +90,11 @@ public class LogFactory  {
                 h.endAsync(false,ex);
             }));
             throw ex;
+        }finally {
+            //同步执行结束操作
+            for (LogHandler handler : logHandlers) {
+                handler.endSync(pjp,proceed);
+            }
         }
     }
 
