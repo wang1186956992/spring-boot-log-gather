@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>bidanet.com</groupId>
-    <artifactId>hprose</artifactId>
+    <artifactId>bd-log</artifactId>
     <version>1.0-SNAPSHOT</version>
 
 

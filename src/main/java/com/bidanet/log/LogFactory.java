@@ -29,8 +29,8 @@ import java.util.concurrent.TimeUnit;
 public class LogFactory  {
 
 
-    ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
-    public static Logger logger= LoggerFactory.getLogger(LogFactory.class);
+    protected ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
+    public Logger logger= LoggerFactory.getLogger(LogFactory.class);
 
 
 
@@ -44,7 +44,8 @@ public class LogFactory  {
      * @return
      * @throws Throwable
      */
-    public Object execPoint(ProceedingJoinPoint pjp,Class<LogHandler>[] handlers) throws Throwable {
+
+    public Object execPoint(ProceedingJoinPoint pjp, Class<LogHandler>... handlers) throws Throwable {
         Object[] args = pjp.getArgs();//参数
         List<LogHandler> logHandlers=new ArrayList<>(handlers.length);
         //1.创建处理类

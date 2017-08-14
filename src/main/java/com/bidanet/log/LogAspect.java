@@ -2,6 +2,7 @@ package com.bidanet.log;
 
 
 import com.bidanet.log.base.BdLog;
+import com.bidanet.log.base.LogHandler;
 import javassist.*;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -18,9 +19,9 @@ public class LogAspect {
 
     @Around("@annotation(bdLog)")
     public Object Interceptor(ProceedingJoinPoint pjp,BdLog bdLog) throws Throwable {
+        Class<LogHandler>[] value = bdLog.value();
 
-
-        return logFactory.execPoint(pjp, bdLog.value());
+        return logFactory.execPoint(pjp);
 
 
     }
