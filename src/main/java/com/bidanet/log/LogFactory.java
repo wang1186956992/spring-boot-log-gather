@@ -10,17 +10,11 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by xuejike on 2017/8/3.
@@ -29,13 +23,17 @@ import java.util.concurrent.TimeUnit;
 public class LogFactory  {
 
 
-    protected ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
-    public Logger logger= LoggerFactory.getLogger(LogFactory.class);
+    protected ExecutorService threadPool;
+    protected Logger logger= LoggerFactory.getLogger(LogFactory.class);
 
 
+    public LogFactory(int poolNum) {
+        threadPool = Executors.newFixedThreadPool(poolNum);
+    }
 
-
-
+    public LogFactory() {
+        this(3);
+    }
 
     /**
      * 日志处理类
@@ -57,7 +55,7 @@ public class LogFactory  {
 
         //2.异步提交处理方法
 
-        cachedThreadPool.submit(() -> {
+        threadPool.submit(() -> {
 
             try {
                 String classType = pjp.getTarget().getClass().getName();
@@ -80,13 +78,13 @@ public class LogFactory  {
             proceed = pjp.proceed(args);
 
 
-            cachedThreadPool.submit(()-> logHandlers.forEach(h->{
+            threadPool.submit(()-> logHandlers.forEach(h->{
                 h.endAsync(true,null);
             }));
             return proceed;
         }catch (Throwable ex){
 //            logFactory.end(s,pjp,false,ex);
-            cachedThreadPool.submit(()-> logHandlers.forEach(h->{
+            threadPool.submit(()-> logHandlers.forEach(h->{
                 h.endAsync(false,ex);
             }));
             throw ex;
