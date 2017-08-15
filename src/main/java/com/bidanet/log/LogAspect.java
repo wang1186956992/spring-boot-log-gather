@@ -19,7 +19,7 @@ public class LogAspect {
 
     @Around("@annotation(bdLog)")
     public Object Interceptor(ProceedingJoinPoint pjp,BdLog bdLog) throws Throwable {
-        Class<LogHandler>[] value = bdLog.value();
+        Class<? extends LogHandler>[] value = bdLog.value();
 
         return logFactory.execPoint(pjp,value);
 
