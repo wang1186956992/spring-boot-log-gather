@@ -13,8 +13,7 @@ import org.springframework.beans.BeanUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * Created by xuejike on 2017/8/3.
@@ -55,7 +54,9 @@ public class LogFactory  {
 
         //2.异步提交处理方法
 
-        threadPool.submit(() -> {
+
+
+        Future<?> submit = threadPool.submit(() -> {
 
             try {
                 String classType = pjp.getTarget().getClass().getName();
@@ -64,7 +65,7 @@ public class LogFactory  {
                 String clazzName = clazz.getName();
                 String methodName = pjp.getSignature().getName(); //获取方法名称
                 String[] fieldsName = getFieldsName(clazz, clazzName, methodName);
-                logHandlers.forEach(h->h.beforeAsync(clazz,methodName,fieldsName,args));
+                logHandlers.forEach(h -> h.beforeAsync(clazz, methodName, fieldsName, args));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -72,19 +73,36 @@ public class LogFactory  {
 
         });
 
+
         //3.执行内容
         Object proceed=null;
         try {
             proceed = pjp.proceed(args);
 
 
-            threadPool.submit(()-> logHandlers.forEach(h->{
-                h.endAsync(true,null);
-            }));
+            threadPool.submit(()-> {
+                try {
+                    submit.get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+                logHandlers.forEach(h->{
+                    h.endAsync(true,null);
+                });
+            });
             return proceed;
         }catch (Throwable ex){
 //            logFactory.end(s,pjp,false,ex);
             threadPool.submit(()-> logHandlers.forEach(h->{
+                try {
+                    submit.get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
                 h.endAsync(false,ex);
             }));
             throw ex;
