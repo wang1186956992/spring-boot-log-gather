@@ -11,5 +11,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD,ElementType.ANNOTATION_TYPE })
 public @interface BdLog {
-    Class<LogHandler>[] value() default {};
+    Class<? extends LogHandler>[] value() default {};
 }
